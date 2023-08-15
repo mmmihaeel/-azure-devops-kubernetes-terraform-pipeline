@@ -9,8 +9,8 @@ strategy:
       operatingSystem: 'macos-latest'
 
 pool:
-  vmImage: ${operatingSystem}
+  vmImage: $(operatingSystem)
 
 steps:
-- script: echo Running on ${operatingSystem}!
+- script: echo Running on $(operatingSystem)!
   displayName: 'Run a one-line script'
