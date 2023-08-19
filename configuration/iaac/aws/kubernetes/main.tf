@@ -1,18 +1,32 @@
 # aws --version
 # aws eks --region us-east-1 update-kubeconfig --name in28minutes-cluster
 # Uses default VPC and Subnet. Create Your Own VPC and Private Subnets for Prod Usage.
-# terraform-backend-state-in28minutes-123
-# AKIA4AHVNOD7OOO6T4KI
 
 terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
   backend "s3" {
-    bucket         = "mybucket"       # Will be overridden from build
-    key            = "path/to/my/key" # Will be overridden from build
+    bucket         = "terraform-backend-state-mmmihaeel-123-prod"
+    key            = "kubernetes-prod.tfstate"
     region         = "us-east-1"
-    dynamodb_table = "dev_application_locks"
+    dynamodb_table = "prod_application_locks"
     encrypt        = true
   }
 }
+
+
+data "aws_eks_cluster" "cluster" {
+  name = module.top-backend-starter-cluster.cluster_name
+}
+
+data "aws_eks_cluster_auth" "cluster" {
+  name = module.top-backend-starter-cluster.cluster_name
+}
+
 
 resource "aws_default_vpc" "default" {
   tags = {
@@ -21,9 +35,9 @@ resource "aws_default_vpc" "default" {
 }
 
 provider "kubernetes" {
-  host                   = module.top-backend-starter-cluster.cluster.endpoint
-  cluster_ca_certificate = base64decode(module.top-backend-starter-cluster.cluster.certificate_authority.0.data)
-  token                  = module.top-backend-starter-cluster.cluster.token
+  host                   = data.aws_eks_cluster.cluster.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
+  token                  = data.aws_eks_cluster_auth.cluster.token
 }
 
 module "top-backend-starter-cluster" {
@@ -46,7 +60,6 @@ module "top-backend-starter-cluster" {
     }
   }
 
-  # Self Managed Node Group(s)
   self_managed_node_group_defaults = {
     instance_type                          = "m6i.large"
     update_launch_template_default_version = true
@@ -89,7 +102,14 @@ module "top-backend-starter-cluster" {
   }
 
   eks_managed_node_groups = {
-    blue = {}
+    blue = {
+      min_size     = 2
+      max_size     = 8
+      desired_size = 2
+
+      instance_types = ["t3.large"]
+      capacity_type  = "SPOT"
+    }
     green = {
       min_size     = 1
       max_size     = 10
@@ -97,18 +117,6 @@ module "top-backend-starter-cluster" {
 
       instance_types = ["t3.large"]
       capacity_type  = "SPOT"
-    }
-  }
-
-  # Fargate Profile(s)
-  fargate_profiles = {
-    default = {
-      name = "default"
-      selectors = [
-        {
-          namespace = "default"
-        }
-      ]
     }
   }
 
