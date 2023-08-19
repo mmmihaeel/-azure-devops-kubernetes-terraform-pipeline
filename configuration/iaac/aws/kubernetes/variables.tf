@@ -11,7 +11,7 @@ variable "bucket_name" {
 }
 
 variable "subnets" {
-  default = ["subnet-0db997e3bc22720bc", "subnet-0b387645c7906d6c4"]
+  default = ["subnet-04401d58dd83dbaef", "subnet-015186c2978f8030a", "subnet-0b2907424664555b7"]
 }
 
 variable "cluster_name" {
