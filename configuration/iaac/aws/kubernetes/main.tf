@@ -148,11 +148,11 @@ module "top-backend-starter-cluster" {
 }
 
 data "aws_eks_cluster" "cluster" {
-  name = module.top-backend-starter-cluster.cluster_id
+  name = module.top-backend-starter-cluster.cluster_name # Update to correct attribute
 }
 
 data "aws_eks_cluster_auth" "cluster" {
-  name = module.top-backend-starter-cluster.cluster_id
+  name = module.top-backend-starter-cluster.cluster_name # Update to correct attribute
 }
 
 
