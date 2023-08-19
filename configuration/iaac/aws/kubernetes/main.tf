@@ -21,9 +21,9 @@ resource "aws_default_vpc" "default" {
 }
 
 provider "kubernetes" {
-  host                   = data.aws_eks_cluster.cluster.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
-  token                  = data.aws_eks_cluster_auth.cluster.token
+  host                   = module.top-backend-starter-cluster.cluster.endpoint
+  cluster_ca_certificate = base64decode(module.top-backend-starter-cluster.cluster.certificate_authority.0.data)
+  token                  = module.top-backend-starter-cluster.cluster.token
 }
 
 module "top-backend-starter-cluster" {
@@ -146,15 +146,6 @@ module "top-backend-starter-cluster" {
     Terraform   = "true"
   }
 }
-
-data "aws_eks_cluster" "cluster" {
-  name = module.top-backend-starter-cluster.cluster_name # Update to correct attribute
-}
-
-data "aws_eks_cluster_auth" "cluster" {
-  name = module.top-backend-starter-cluster.cluster_name # Update to correct attribute
-}
-
 
 # We will use ServiceAccount to connect to K8S Cluster in CI/CD mode
 # ServiceAccount needs permissions to create deployments 
