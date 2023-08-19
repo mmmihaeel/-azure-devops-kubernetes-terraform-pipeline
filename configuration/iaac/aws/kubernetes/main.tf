@@ -18,16 +18,6 @@ terraform {
   }
 }
 
-
-data "aws_eks_cluster" "cluster" {
-  name = module.top-backend-starter-cluster.cluster_name
-}
-
-data "aws_eks_cluster_auth" "cluster" {
-  name = module.top-backend-starter-cluster.cluster_name
-}
-
-
 resource "aws_default_vpc" "default" {
   tags = {
     Name = "Default VPC"
@@ -39,7 +29,6 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
   token                  = data.aws_eks_cluster_auth.cluster.token
 }
-
 module "top-backend-starter-cluster" {
   version                        = "~> 19.0"
   source                         = "terraform-aws-modules/eks/aws"
@@ -172,6 +161,14 @@ resource "kubernetes_cluster_role_binding" "example" {
     name      = "default"
     namespace = "default"
   }
+}
+
+data "aws_eks_cluster" "cluster" {
+  name = module.top-backend-starter-cluster.cluster_name
+}
+
+data "aws_eks_cluster_auth" "cluster" {
+  name = module.top-backend-starter-cluster.cluster_name
 }
 
 provider "aws" {
