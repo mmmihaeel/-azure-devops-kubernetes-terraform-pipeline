@@ -33,7 +33,7 @@ module "top-backend-starter-cluster" {
   cluster_name                   = "top-backend-starter-cluster"
   cluster_version                = "1.27"
   cluster_endpoint_public_access = true
-  subnet_ids                     = data.aws_subnet_ids.subnets.ids
+  subnet_ids                     = aws_default_vpc.default.id
   vpc_id                         = aws_default_vpc.default.id
   cluster_addons = {
     coredns = {
