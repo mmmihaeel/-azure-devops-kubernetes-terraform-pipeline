@@ -4,17 +4,20 @@
 # terraform-backend-state-in28minutes-123
 # AKIA4AHVNOD7OOO6T4KI
 
-
 terraform {
   backend "s3" {
-    bucket = "mybucket" # Will be overridden from build
-    key    = "path/to/my/key" # Will be overridden from build
-    region = "us-east-1"
+    bucket         = "mybucket"       # Will be overridden from build
+    key            = "path/to/my/key" # Will be overridden from build
+    region         = "us-east-1"
+    dynamodb_table = "dev_application_locks"
+    encrypt        = true
   }
 }
 
 resource "aws_default_vpc" "default" {
-
+  tags = {
+    Name = "Default VPC"
+  }
 }
 
 data "aws_subnet_ids" "subnets" {
@@ -28,32 +31,32 @@ provider "kubernetes" {
   version                = "~> 2.12"
 }
 
-module "in28minutes-cluster" {
+module "top-backend-starter-cluster" {
   source          = "terraform-aws-modules/eks/aws"
-  cluster_name    = "in28minutes-cluster"
+  cluster_name    = var.cluster_name
   cluster_version = "1.14"
-  subnets         = ["subnet-3f7b2563", "subnet-4a7d6a45"] #CHANGE
+  subnets         = var.subnets #CHANGE
   #subnets = data.aws_subnet_ids.subnets.ids
-  vpc_id          = aws_default_vpc.default.id
+  vpc_id = aws_default_vpc.default.id
 
   #vpc_id         = "vpc-1234556abcdef"
 
   node_groups = [
     {
-      instance_type = "t2.micro"
-      max_capacity  = 5
+      instance_type    = "t2.micro"
+      max_capacity     = 5
       desired_capacity = 3
-      min_capacity  = 3
+      min_capacity     = 3
     }
   ]
 }
 
 data "aws_eks_cluster" "cluster" {
-  name = module.in28minutes-cluster.cluster_id
+  name = module.top-backend-starter-cluster.cluster_id
 }
 
 data "aws_eks_cluster_auth" "cluster" {
-  name = module.in28minutes-cluster.cluster_id
+  name = module.top-backend-starter-cluster.cluster_id
 }
 
 
@@ -76,7 +79,6 @@ resource "kubernetes_cluster_role_binding" "example" {
   }
 }
 
-# Needed to set the default region
 provider "aws" {
-  region  = "us-east-1"
+  region = var.region
 }
