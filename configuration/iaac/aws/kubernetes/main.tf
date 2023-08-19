@@ -35,9 +35,9 @@ module "top-backend-starter-cluster" {
   source          = "terraform-aws-modules/eks/aws"
   cluster_name    = var.cluster_name
   cluster_version = "1.14"
-  subnets         = var.subnets #CHANGE
-  #subnets = data.aws_subnet_ids.subnets.ids
-  vpc_id = aws_default_vpc.default.id
+  # subnets         = var.subnets #CHANGE
+  subnets = ["subnet-0cd8305def97ceef0", "subnet-0db997e3bc22720bc", "subnet-0b387645c7906d6c4"]
+  vpc_id  = aws_default_vpc.default.id
 
   #vpc_id         = "vpc-1234556abcdef"
 
