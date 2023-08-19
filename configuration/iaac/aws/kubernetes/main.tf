@@ -33,7 +33,7 @@ provider "kubernetes" {
 
 module "top-backend-starter-cluster" {
   source          = "terraform-aws-modules/eks/aws"
-  cluster_name    = var.cluster_name
+  cluster_name    = "top-backend-starter-cluster"
   cluster_version = "1.14"
   # subnets         = var.subnets #CHANGE
   subnets = ["subnet-0cd8305def97ceef0", "subnet-0db997e3bc22720bc", "subnet-0b387645c7906d6c4"]
