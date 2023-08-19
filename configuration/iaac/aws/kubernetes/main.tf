@@ -1,6 +1,8 @@
 # aws --version
 # aws eks --region us-east-1 update-kubeconfig --name in28minutes-cluster
 # Uses default VPC and Subnet. Create Your Own VPC and Private Subnets for Prod Usage.
+# terraform-backend-state-in28minutes-123
+# AKIA4AHVNOD7OOO6T4KI
 
 terraform {
   backend "s3" {
@@ -17,10 +19,6 @@ resource "aws_default_vpc" "default" {
     Name = "Default VPC"
   }
 }
-
-# data "aws_subnet_ids" "subnets" {
-#   vpc_id = aws_default_vpc.default.id
-# }
 
 provider "kubernetes" {
   host                   = data.aws_eks_cluster.cluster.endpoint
@@ -145,7 +143,7 @@ module "top-backend-starter-cluster" {
   ]
 
   tags = {
-    Environment = "dev"
+    Environment = "prod"
     Terraform   = "true"
   }
 }
