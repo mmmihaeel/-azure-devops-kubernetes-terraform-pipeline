@@ -16,13 +16,13 @@ steps:
       backendServiceAWS: "aws-for-terraform"
       backendAWSBucketName: "terraform-backend-state-mmmihaeel-123-prod"
       backendAWSKey: "kubernetes-prod.tfstate"
-  - task: TerraformTaskV1@0
-    inputs:
-      provider: "aws"
-      command: "destroy"
-      workingDirectory: "$(System.DefaultWorkingDirectory)/configuration/iaac/aws/kubernetes"
-      environmentServiceNameAWS: "aws-for-terraform"
-  - task: TerraformTaskV1@0
+  # - task: TerraformTaskV4@4
+  #   inputs:
+  #     provider: "aws"
+  #     command: "destroy"
+  #     workingDirectory: "$(System.DefaultWorkingDirectory)/configuration/iaac/aws/kubernetes"
+  #     environmentServiceNameAWS: "aws-for-terraform"
+  - task: TerraformTaskV4@4
     inputs:
       provider: "aws"
       command: "apply"
